@@ -52,5 +52,15 @@ for word, rhyme in word2rhyme.items():
         rhyme2words[rhyme].add(word)
     else:
         rhyme2words[rhyme] = set([word])
+
+unique_rhyme = set()
+
+for rhyme, words in rhyme2words.items():
+    if len(words) == 1:
+        unique_rhyme.add(rhyme)
+        del word2rhyme[list[words][0]]
+    
+for rhyme in unique_rhyme:
+    del rhyme2words[rhyme]
     
 pickle.dump((word2stress, word2phonemes, word2rhyme, rhyme2words, phonemes2type) , open('rhyme', 'wb+'))
