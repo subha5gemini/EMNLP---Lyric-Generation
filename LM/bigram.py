@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.preprocessing import normalize
 from word_index_dict import clean
 import sys
-sys.path.append("../")
+sys.path.append('../lib')
 
 from show_process import ShowProcess
 
@@ -40,8 +40,8 @@ def train():
 
     probs = normalize(counts, norm='l1')
 
-#    with open(bigram_prob, 'w+') as f:
-#        f.write(str(probs))
+    with open(bigram_prob, 'w+') as f:
+        f.write(str(probs))
 
     return word_index_dict, probs
 
@@ -68,5 +68,7 @@ def generate(pair, word_index_dict, probs):
 
     return sentence
 
-word_index_dict, probs = train()
-print(generate(('shop', 'top'), word_index_dict, probs))
+if __name__ == '__main__':
+    word_index_dict, probs = train()
+    print('end')
+    print(generate(('shop', 'top'), word_index_dict, probs))

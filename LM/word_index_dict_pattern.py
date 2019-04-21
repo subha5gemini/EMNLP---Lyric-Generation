@@ -21,8 +21,6 @@ d_US = enchant.Dict("en_US")
 def hasNumbers(inputString):
     return any(char.isdigit() for char in inputString)
 
-
-
 def clean(tokens):
     clean = []
 
