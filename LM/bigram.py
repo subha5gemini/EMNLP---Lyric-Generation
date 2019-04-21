@@ -5,6 +5,8 @@ from word_index_dict import clean
 import sys
 sys.path.append("../")
 
+from show_process import ShowProcess
+
 lyric_data = '../data/lyrics.csv'
 word_dict_file = '../data/word_index_dict'
 bigram_prob = '../data/bigram_prob'
