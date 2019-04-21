@@ -6,4 +6,5 @@ model = Word2Vec.KeyedVectors.load_word2vec_format(EMBEDDINGS.strip(), binary=Tr
 
 def related_word(word, num):
     words = model.most_similar(word, topn = (num))
-    return words.append((word, 1.0))
+    words.append((word, 1.0))
+    return words
