@@ -69,15 +69,18 @@ if __name__ == '__main__':
     if sys.argv[1] == 'data':
         clean = clean_data
     elif sys.argv[1] == 'nd':
-        clean = clean_nd
+        clean = clean_no_digit
     else:
         clean = clean_pattern
 
-    for line in lyrics_store:
+    for lyric in lyrics_store:
         process.show_process()
-        line = str(line)
-        tokens = line.split()
-        data += clean(tokens)
+        lyric = str(lyric)
+        lyric = lyric.split('\n')
+
+        for line in lyric:
+            tokens = line.split()
+            data += clean(tokens)
 
     with open(lyric_data, 'w+') as f:
-        f.wirte(data)
+        f.write(data)

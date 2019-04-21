@@ -12,9 +12,3 @@ if __name__ == '__main__':
 
     with open('./data/word_index_dict', 'r') as f:
         word_index_dict = eval(f.read())
-
-    with open('./data/bigram_prob', 'r') as f:
-        probs = eval(f.read())
-
-    for pair in pairs:
-        print(generate(pair, word_index_dict, probs))

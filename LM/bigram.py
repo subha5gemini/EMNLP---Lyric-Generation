@@ -1,4 +1,3 @@
-import pickle
 import numpy as np
 from sklearn.preprocessing import normalize
 import sys
@@ -10,12 +9,12 @@ START = '<s>'
 END = '</s>'
 
 def train():
-    lyric_data = '../data/lyrics' + sys.argv[1]
-    word_dict_file = '../data/word_index_dict' + sys.argv[1]
+    lyric_data = '../data/lyrics.' + sys.argv[1]
+    word_dict_file = '../data/word_index_dict.' + sys.argv[1]
     bigram_prob = '../data/bigram_prob.' + sys.argv[1]
 
     with open(lyric_data, 'r') as f:
-        lyrics_store = f.read()
+        lyrics_store = f.readlines()
 
     #get the tokens in lyrics
     with open(word_dict_file, 'r') as f:
@@ -36,7 +35,6 @@ def train():
         counts[word_index_dict[previous]][word_index_dict[START]] += 1
 
     probs = normalize(counts, norm='l1')
-    pickle.dump(probs, open(bigram_prob, 'wb+'))
 
 def generate(pair, word_index_dict, probs):
     index_word_dict = {v: k for k, v in word_index_dict.items()}

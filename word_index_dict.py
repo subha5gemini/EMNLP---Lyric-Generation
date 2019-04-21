@@ -2,12 +2,12 @@ import pandas as pd
 import string
 import enchant
 import sys
-sys.path.append('../lib')
+sys.path.append('./lib')
 
 from show_process import ShowProcess
 
-lyric_data = '../data/lyrics.' + sys.argv[1]
-word_dict_file = '../data/word_index_dict.' + sys.argv[1]
+lyric_data = './data/lyrics.' + sys.argv[1]
+word_dict_file = './data/word_index_dict.' + sys.argv[1]
 START = '<s>'
 END = '</s>'
 
@@ -16,7 +16,7 @@ with open(lyric_data, 'r') as f:
 
 lexicon = set()
 word_index_dict = {}
-process = ShowProcess(len(lyrics_store))
+process = ShowProcess(len(lyrics))
 
 for line in lyrics:
     process.show_process()
