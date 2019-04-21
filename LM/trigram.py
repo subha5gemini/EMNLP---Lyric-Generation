@@ -1,55 +1,44 @@
 import pandas as pd
-import csv
+import numpy as np
 from collections import OrderedDict, Counter
+from sklearn.preprocessing import normalize
+from word_index_dict import clean
+
+lyric_data = '../data/lyrics.csv'
+word_dict_file = '../data/word_index_dict'
+trigram_prob = '../data/trigram_prob'
+START = '<s>'
+END = '</s>'
 
 class OrderedCounter(Counter, OrderedDict):
     pass
 
-def clean(tokens):
-    clean = []
-    for token in tokens:
-        #normalize token
-        token = token.lower()
-        clean.append(token)
-        #drop stop words
-    print("end1")
-    return clean
-
-
-
-
-
-
-
 #read the csv file and store the lyrics in lyrics_store []
-csvReader = pd.read_csv('lyrics.csv')
+csvReader = pd.read_csv(lyric_data)
 csvReader = csvReader.drop(0)
 lyrics_store = csvReader['lyrics']
 
 #get the tokens in lyrics
-lexicon = []
+with open(word_dict_file, 'r') as f:
+    word_index_dict = eval(f.read())
+
+counts = np.zeros((len(word_index_dict), len(word_index_dict), len(word_index_dict)), dtype = float)
+
 for line in lyrics_store:
     line = str(line)
-    lexicon.extend(line.split())
-lexicon = clean(lexicon)
+    tokens = clean(line.split())
+    previous = END
+    pprevious = END
 
-bigram = []
+    for token in reversed(tokens):
+        counts[word_index_dict[pprevious]][word_index_dict[previous]][word_index_dict[token]] += 1
+        pprevious = previous
+        previous = token
 
-for i in range(len(lexicon) - 2):
-    temp = (lexicon[i], lexicon[i + 1], lexicon[i + 2])
-    bigram.append(temp)
-count = Counter(bigram)
-print("end2")
+    counts[word_index_dict[pprevious]][word_index_dict[previous]][word_index_dict[START]] += 1
 
-csv_list = []
-csv_list.append(['Bigram', 'Frequency'])
-for pair in count.most_common():
-    temp = pair
-    csv_list.append(temp)
-print("end3")
+for i in range(len(counts)):
+    probs = normalize(counts[i], norm='l1')
 
-with open('trigram.csv', 'w') as csvFile:
-    writer = csv.writer(csvFile)
-    writer.writerows(csv_list)
-csvFile.close()
-print("end4")
+with open(trigram_prob, 'w+') as f:
+    f.write(str(probs))
