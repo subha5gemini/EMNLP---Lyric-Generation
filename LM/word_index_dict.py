@@ -6,48 +6,27 @@ sys.path.append('../lib')
 
 from show_process import ShowProcess
 
-lyric_data = '../data/lyrics.csv'
-word_dict_file = '../data/word_index_dict'
+lyric_data = '../data/lyrics.' + sys.argv[1]
+word_dict_file = '../data/word_index_dict.' + sys.argv[1]
 START = '<s>'
 END = '</s>'
 
-d_GB = enchant.Dict("en_GB")
-d_US = enchant.Dict("en_US")
+with open(lyric_data, 'r') as f:
+    lyrics = f.readlines()
 
-def clean(tokens):
-    clean = []
+lexicon = set()
+word_index_dict = {}
+process = ShowProcess(len(lyrics_store))
 
-    for token in tokens:
-        #normalize token
-        token = token.lower()
-        token = token.strip(string.punctuation)
+for line in lyrics:
+    process.show_process()
+    lexicon.update(set(line.rstrip().split()))
 
-        if token != '' and (d_GB.check(token) or d_US.check(token)):
-            clean.append(token)
+for word in lexicon:
+    word_index_dict[word] = len(word_index_dict)
 
-    return clean
+word_index_dict[START] = len(word_index_dict)
+word_index_dict[END] = len(word_index_dict)
 
-def word_dict():
-    #read the csv file and store the lyrics in lyrics_store []
-    csvReader = pd.read_csv(lyric_data)
-    csvReader = csvReader.drop(0)
-    lyrics_store = csvReader['lyrics']
-
-    #get the tokens in lyrics
-    lexicon = set()
-    word_index_dict = {}
-    process = ShowProcess(len(lyrics_store))
-
-    for line in lyrics_store:
-        process.show_process()
-        line = str(line)
-        lexicon.update(set(clean(line.split())))
-
-    for word in lexicon:
-        word_index_dict[word] = len(word_index_dict)
-
-    word_index_dict[START] = len(word_index_dict)
-    word_index_dict[END] = len(word_index_dict)
-
-    with open(word_dict_file, 'w+') as f:
-        f.write(str(word_index_dict))
+with open(word_dict_file, 'w+') as f:
+    f.write(str(word_index_dict))

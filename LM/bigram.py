@@ -7,13 +7,14 @@ sys.path.append('../lib')
 
 from show_process import ShowProcess
 
-lyric_data = '../data/lyrics.csv'
-word_dict_file = '../data/word_index_dict'
-bigram_prob = '../data/bigram_prob'
 START = '<s>'
 END = '</s>'
 
 def train():
+    lyric_data = '../data/lyrics' + sys.argv[1]
+    word_dict_file = '../data/word_index_dict' + sys.argv[1]
+    bigram_prob = '../data/bigram_prob.' + sys.argv[1]
+
     #read the csv file and store the lyrics in lyrics_store []
     csvReader = pd.read_csv(lyric_data)
     csvReader = csvReader.drop(0)
@@ -43,8 +44,6 @@ def train():
     with open(bigram_prob, 'w+') as f:
         f.write(str(probs))
 
-    return word_index_dict, probs
-
 def generate(pair, word_index_dict, probs):
     index_word_dict = {v: k for k, v in word_index_dict.items()}
     sentence = []
@@ -69,6 +68,4 @@ def generate(pair, word_index_dict, probs):
     return sentence
 
 if __name__ == '__main__':
-    word_index_dict, probs = train()
-    print('end')
-    print(generate(('shop', 'top'), word_index_dict, probs))
+    train()

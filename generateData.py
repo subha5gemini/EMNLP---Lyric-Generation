@@ -8,7 +8,7 @@ sys.path.append('../lib')
 from show_process import ShowProcess
 
 lyric_csv = './data/lyrics.csv'
-lyric_data = './data/lyrics'
+lyric_data = './data/lyrics.data'
 lyric_nd = './data/lyrics.nd'
 lyric_pattern = './data/lyric.pattern'
 
@@ -76,12 +76,12 @@ for line in lyrics_store:
     data += clean(tokens)
     nd += clean_no_digit(tokens)
     pattern += clean_pattern(tokens)
-    
+
 with open(lyric_data, 'w+') as f:
     f.wirte(data)
-    
+
 with open(lyric_nd, 'w+') as f:
-    f.wirte(nd)    
+    f.wirte(nd)
 
 with open(lyric_pattern, 'w+') as f:
     f.wirte(pattern)

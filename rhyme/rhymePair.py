@@ -10,7 +10,7 @@ def generate_pairs(words, num):
 
     for word in words:
         if word[0] in word2rhyme:
-            if word2rhyme[word[0]] in rhyme_class[word2rhyme[word[0]]]:
+            if word2rhyme[word[0]] in rhyme_class:
                 rhyme_class[word2rhyme[word[0]]].append(word)
             else:
                 rhyme_class[word2rhyme[word[0]]] = [word]

@@ -2,7 +2,6 @@ import sys
 sys.path.extend(['./GenerateWords', './LM', './rhyme', './lib'])
 
 from GenerateCloseWords import related_word
-from bigram import generate
 from rhymePair import generate_pairs
 
 if __name__ == '__main__':
