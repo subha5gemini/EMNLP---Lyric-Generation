@@ -20,9 +20,9 @@ def clean(tokens):
     for token in tokens:
         #normalize token
         token = token.lower()
-        token.strip(string.punctuation)
+        token = token.strip(string.punctuation)
 
-        if d_GB.check(token) or d_US.check(token):
+        if token != '' and (d_GB.check(token) or d_US.check(token)):
             clean.append(token)
 
     return clean
