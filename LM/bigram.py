@@ -1,7 +1,7 @@
+import pickle
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import normalize
-from word_index_dict import clean
 import sys
 sys.path.append('../lib')
 
@@ -15,10 +15,8 @@ def train():
     word_dict_file = '../data/word_index_dict' + sys.argv[1]
     bigram_prob = '../data/bigram_prob.' + sys.argv[1]
 
-    #read the csv file and store the lyrics in lyrics_store []
-    csvReader = pd.read_csv(lyric_data)
-    csvReader = csvReader.drop(0)
-    lyrics_store = csvReader['lyrics']
+    with open(lyric_data, 'r') as f:
+        lyrics_store = f.read()
 
     #get the tokens in lyrics
     with open(word_dict_file, 'r') as f:
@@ -28,9 +26,8 @@ def train():
     process = ShowProcess(len(lyrics_store))
 
     for line in lyrics_store:
-        line = str(line)
+        tokens = line.rstrip().split()
         process.show_process()
-        tokens = clean(line.split())
         previous = END
 
         for token in reversed(tokens):
@@ -40,9 +37,7 @@ def train():
         counts[word_index_dict[previous]][word_index_dict[START]] += 1
 
     probs = normalize(counts, norm='l1')
-
-    with open(bigram_prob, 'w+') as f:
-        f.write(str(probs))
+    pickle.dump(probs, open(bigram_prob, 'wb+'))
 
 def generate(pair, word_index_dict, probs):
     index_word_dict = {v: k for k, v in word_index_dict.items()}
