@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.preprocessing import normalize
 from word_index_dict import clean
 import sys
+sys.path.append("../")
 
 lyric_data = '../data/lyrics.csv'
 word_dict_file = '../data/word_index_dict'
