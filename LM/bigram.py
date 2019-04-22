@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn.preprocessing import normalize
+from scipy import sparse
 import sys
 sys.path.append('../lib')
 
@@ -9,32 +10,39 @@ START = '<s>'
 END = '</s>'
 
 def train():
-    lyric_data = '../data/lyrics.' + sys.argv[1]
-    word_dict_file = '../data/word_index_dict.' + sys.argv[1]
-    bigram_prob = '../data/bigram_prob.' + sys.argv[1]
+    lyric_data = '../data/lyrics.nd'# + sys.argv[1]
+    word_dict_file = '../data/word_index_dict.nd'# + sys.argv[1]
+    bigram_count = '../data/bigram_count.nd'# + sys.argv[1]
+    bigram_prob = '../data/bigram_prob.nd'# + sys.argv[1]
 
-    with open(lyric_data, 'r') as f:
-        lyrics_store = f.readlines()
+    try:
+        sparse_counts = sparse.load_npz(bigram_count)
+    except Exception as e:
+        with open(lyric_data, 'r') as f:
+            lyrics_store = f.readlines()
 
-    #get the tokens in lyrics
-    with open(word_dict_file, 'r') as f:
-        word_index_dict = eval(f.read())
+        #get the tokens in lyrics
+        with open(word_dict_file, 'r') as f:
+            word_index_dict = eval(f.read())
 
-    counts = np.zeros((len(word_index_dict), len(word_index_dict)), dtype = float)
-    process = ShowProcess(len(lyrics_store))
+        counts = np.zeros((len(word_index_dict), len(word_index_dict)), dtype = float)
+        process = ShowProcess(len(lyrics_store))
 
-    for line in lyrics_store:
-        tokens = line.rstrip().split()
-        process.show_process()
-        previous = END
+        for line in lyrics_store:
+            tokens = line.rstrip().split()
+            process.show_process()
+            previous = END
 
-        for token in reversed(tokens):
-            counts[word_index_dict[previous]][word_index_dict[token]] += 1
-            previous = token
+            for token in reversed(tokens):
+                counts[word_index_dict[previous]][word_index_dict[token]] += 1
+                previous = token
 
-        counts[word_index_dict[previous]][word_index_dict[START]] += 1
+            counts[word_index_dict[previous]][word_index_dict[START]] += 1
 
-    probs = normalize(counts, norm='l1')
+        sparse_counts = sparse.csc_matrix(counts)
+    finally:
+        probs = normalize(sparse_counts, norm = 'l1', copy = False)
+        sparse.save_npz(bigram_prob + '.npz', probs)
 
 def generate(pair, word_index_dict, probs):
     index_word_dict = {v: k for k, v in word_index_dict.items()}
@@ -46,7 +54,11 @@ def generate(pair, word_index_dict, probs):
         num_words = 1
 
         while(True):
-            wordIndex = np.random.choice(len(word_index_dict), 1, p = list(probs[word_index_dict[prevWord]]))
+            if prevWord not in word_index_dict:
+                wordIndex = np.random.choice(len(word_index_dict), 1)
+            else:
+                wordIndex = np.random.choice(len(word_index_dict), 1, p = probs[word_index_dict[prevWord]].tolist()[0])
+
             word = index_word_dict[wordIndex[0]]
             returnSTR = word + ' ' + returnSTR
             num_words +=1
