@@ -7,14 +7,14 @@ word2rhyme = {}
 phonemes2type = {}
 rhyme2words = {}
 
-with open('cmudict-0.7b.phones.txt', 'r', encoding = 'ISO-8859-1') as f:
+with open('../data/cmudict-0.7b.phones.txt', 'r', encoding = 'ISO-8859-1') as f:
     phonemes = f.readlines()
 
     for phoneme in phonemes:
         phoneme = phoneme.rstrip().split()
         phonemes2type[phoneme[0]] = phoneme[1]
 
-with open('cmudict.txt', 'r', encoding = 'ISO-8859-1') as f:
+with open('../data/cmudict.txt', 'r', encoding = 'ISO-8859-1') as f:
     lines = f.readlines()
     duplicate_words = set()
 
