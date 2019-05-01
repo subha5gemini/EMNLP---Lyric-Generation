@@ -3,6 +3,7 @@ import string
 import enchant
 import sys
 from pattern.en import lemma
+import re
 sys.path.append('./lib')
 
 from show_process import ShowProcess
@@ -76,7 +77,7 @@ if __name__ == '__main__':
     for lyric in lyrics_store:
         process.show_process()
         lyric = str(lyric)
-        lyric = lyric.split('\n')
+        lyric = re.split(r'[\n.?!]', lyric)
 
         for line in lyric:
             tokens = line.split()
