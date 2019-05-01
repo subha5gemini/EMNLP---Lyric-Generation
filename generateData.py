@@ -29,14 +29,19 @@ def hasNumbers(inputString):
 
 def clean_no_digit(tokens):
     clean = []
+    if len(tokens) < 3:
+        return ''
 
     for token in tokens:
         #normalize token
         token = token.lower()
         token = token.strip(string.punctuation)
 
-        if token != '' and (d_GB.check(token) or d_US.check(token)) and not hasNumbers(token):
-            clean.append(token)
+        if token != '':
+            if (d_GB.check(token) or d_US.check(token)) and not hasNumbers(token):
+                clean.append(token)
+            else:
+                return ""
 
     return ' '.join(clean) + '\n'
 
