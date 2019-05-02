@@ -2,7 +2,6 @@ import pandas as pd
 import string
 import enchant
 import sys
-from pattern.en import lemma
 import re
 sys.path.append('./lib')
 
@@ -45,20 +44,6 @@ def clean_no_digit(tokens):
 
     return ' '.join(clean) + '\n'
 
-def clean_pattern(tokens):
-    clean = []
-
-    for token in tokens:
-        #normalize token
-        token = token.lower()
-        token = token.strip(string.punctuation)
-
-        if token != '' and (d_GB.check(token) or d_US.check(token)) and not hasNumbers(token):
-            token = lemma(token)
-            clean.append(token)
-
-    return ' '.join(clean) + '\n'
-
 if __name__ == '__main__':
     lyric_csv = './data/lyrics.csv'
     lyric_data = './data/lyrics.' + sys.argv[1]
@@ -76,8 +61,6 @@ if __name__ == '__main__':
         clean = clean_data
     elif sys.argv[1] == 'nd':
         clean = clean_no_digit
-    else:
-        clean = clean_pattern
 
     for lyric in lyrics_store:
         process.show_process()

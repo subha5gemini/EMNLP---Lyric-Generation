@@ -29,14 +29,14 @@ PAD = '<pad>'
 def train():
     lyric_data = '../data/lyrics.nd'# + sys.argv[1]
     word_dict_file = '../data/word_index_dict.nd'# + sys.argv[1]
-    
+
     with open(lyric_data, 'r') as f:
         lyrics_store = f.readlines()
 
     with open(word_dict_file, 'r') as f:
         word2index = eval(f.read())
         word2index[PAD] = len(word2index)
-        
+
     describe_data(lyrics_store, None, None,
           batch_generator_lm(lyrics_store, word2index, args.batch_size))
 
@@ -51,17 +51,17 @@ def train():
                             recurrent_dropout = args.dropout,
                             return_sequences = True))
     language_model.add(TimeDistributed(Dense(len(word2index), activation = 'softmax')))
-    
+
     adadelta = optimizers.Adadelta(clipnorm=1.0)
     language_model.compile(optimizer=adadelta, loss = 'categorical_crossentropy', metrics = ['accuracy'])
-    
+
     # Training
     language_model.fit_generator(batch_generator_lm(lyrics_store, word2index, args.batch_size),
                                  callbacks = [EarlyStopping(monitor='acc', patience = args.early_stopping)],
                                  epochs = args.epochs, steps_per_epoch = len(lyrics_store) / args.batch_size)
-    
+
     language_model.save("../data/lstm.h5")
-    
+
     return language_model, word2index
 
 def vectorize_sequence(seq, word2index):
@@ -80,11 +80,11 @@ def batch_generator_lm(data, vocab, batch_size=1):
     while True:
         batch_x = []
         batch_y = []
-        
+
         for sent in data:
             batch_x.append(vectorize_sequence(sent, vocab))
             batch_y.append([one_hot_encode_label(token, vocab) for token in shift_by_one(sent)])
-            
+
             if len(batch_x) >= batch_size:
                 # Pad Sequences in batch to same length
                 batch_x = pad_sequences(batch_x, vocab[PAD])
@@ -95,12 +95,12 @@ def batch_generator_lm(data, vocab, batch_size=1):
 
 def describe_data(data, gold_labels, label_set, generator):
     batch_x, batch_y = [], []
-    
+
     for bx, by in generator:
         batch_x = bx
         batch_y = by
         break
-    
+
     print('Data example:',data[0])
     print('Label:',None)
     print('Label count:', None)
@@ -115,29 +115,29 @@ def pad_sequences(batch_x, pad_value):
         Assume that batch_x is a list of lists.
     '''
     pad_length = len(max(batch_x, key=lambda x: len(x)))
-    
+
     for i, x in enumerate(batch_x):
         if len(x) < pad_length:
             batch_x[i] = x + ([pad_value] * (pad_length - len(x)))
-    
+
     return batch_x
 
 
 def generate_text(language_model, word, word2index):
     prediction = [word]
-    
+
     while not (prediction[-1] == START or len(prediction) >= 50):
         next_token_one_hot = language_model.predict(np.array([[word2index[p] for p in prediction]]), batch_size=1)[0][-1]
-        next_tokens = sorted([i for i,v in enumerate(next_token_one_hot)], 
-                              key = lambda i:next_token_one_hot[i], 
+        next_tokens = sorted([i for i,v in enumerate(next_token_one_hot)],
+                              key = lambda i:next_token_one_hot[i],
                               reverse = True)[:10]
         next_token = next_tokens[random.randint(0, 9)]
-        
+
         for w, i in word2index.items():
             if i == next_token:
                 prediction.append(w)
                 break
-            
+
     return ' '.join(reversed(prediction[:-1]))
 
 def shift_by_one(seq):
@@ -145,5 +145,4 @@ def shift_by_one(seq):
     return [seq[len(seq) - x - 2] if x < len(seq) - 1 else PAD for x in range(len(seq))] + [START]
 
 if __name__ == '__main__':
-    lstm, word2index = train()
-    generate_text(lstm, 'love', word2index)
+    train()

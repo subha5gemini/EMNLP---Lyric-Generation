@@ -60,11 +60,15 @@ def generate(pair, word_index_dict, probs):
                 wordIndex = np.random.choice(len(word_index_dict), 1, p = probs[word_index_dict[prevWord]].tolist()[0])
 
             word = index_word_dict[wordIndex[0]]
-            returnSTR = word + ' ' + returnSTR
-            num_words +=1
+            num_words += 1
             prevWord = word
 
-            if word == "<s>" or num_words == 12:
+            if word == "<s>":
+                break
+
+            returnSTR = word + ' ' + returnSTR
+
+            if num_words == 12:
                 break
 
         sentence.append(returnSTR)
